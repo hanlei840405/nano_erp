@@ -1,0 +1,7 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nano.persistence.system.ElementMapper">
+	<select id="findOne" resultType="com.nano.domain.system.Element" parameterType="string">
+		SELECT * FROM SYS_FUNCTION
+		WHERE ID=#{id}
+	</select>
+</mapper>

@@ -1,0 +1,70 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nano.persistence.base.DictionaryItemMapper">
+	<sql id="result">
+		ID,
+		CREATED,
+		MODIFIED,
+		VERSION,
+		DICTIONARY_ID AS dictionaryId,
+		CODE,
+		NAME,
+		CREATOR,
+		MODIFIER
+	</sql>
+	<select id="findOne" resultType="com.nano.domain.base.DictionaryItem"
+		parameterType="string">
+		SELECT
+		<include refid="result"></include>
+		FROM BASE_DICTIONARY_ITEM
+		WHERE ID=#{id}
+	</select>
+	<select id="findMany" resultType="com.nano.domain.base.DictionaryItem">
+		SELECT
+		<include refid="result"></include>
+		FROM BASE_DICTIONARY_ITEM
+		WHERE 1=1
+		<if test="dictionaryId != null and dictionaryId != ''">
+			AND DICTIONARY_ID=#{dictionaryId}
+		</if>
+		<if test="code != null and code != ''">
+			AND CODE=#{code}
+		</if>
+	</select>
+	<insert id="saveOne" parameterType="com.nano.domain.base.DictionaryItem">
+		INSERT INTO
+		BASE_DICTIONARY_ITEM (
+		ID,DICTIONARY_ID,CODE,NAME,CREATOR,MODIFIER,CREATED,MODIFIED,VERSION
+		) VALUES(
+		#{id},#{dictionaryId},#{code},#{name},#{creator},#{modifier},now(),#{modified},#{version}
+		)
+	</insert>
+	<insert id="saveMany" parameterType="map">
+		INSERT INTO BASE_DICTIONARY_ITEM (
+		ID,DICTIONARY_ID,CODE,NAME,CREATOR,MODIFIER,CREATED,MODIFIED,VERSION)
+		VALUES
+		<foreach collection="list" item="item" separator=",">
+			(
+			#{item.id},
+			#{item.dictionaryId},
+			#{item.code},
+			#{item.name},
+			#{item.creator},
+			#{item.modifier},
+			now(),
+			#{item.modified},
+			#{item.version}
+			)
+		</foreach>
+	</insert>
+	<update id="updateOne" parameterType="com.nano.domain.base.DictionaryItem">
+		UPDATE BASE_DICTIONARY_ITEM SET CODE=#{code},NAME=#{name},VERSION=VERSION + 1 WHERE ID=#{id} AND VERSION=#{version}
+	</update>
+	<delete id="deleteOne" parameterType="com.nano.domain.base.DictionaryItem">
+		DELETE FROM BASE_DICTIONARY_ITEM
+		WHERE ID = #{id} AND VERSION = #{version}
+	</delete>
+	<delete id="deleteByParent" parameterType="string">
+		DELETE FROM BASE_DICTIONARY_ITEM
+		WHERE DICTIONARY_ID = #{dictionaryId}
+	</delete>
+</mapper>

@@ -1,0 +1,91 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nano.persistence.base.ProductMapper">
+	<sql id="result">
+		ID,
+		CREATED,
+		MODIFIED,
+		VERSION,
+		SHORT_NAME AS shortName,
+		FULL_NAME AS fullName,
+		CODE,
+		BRAND_ID AS brandId,
+		CATEGORY_ID AS categoryId,
+		CONTACT_ID AS contactId,
+		SHOP_ID AS shopId,
+		CREATOR,
+		MODIFIER
+	</sql>
+	<select id="findOne" resultType="com.nano.domain.base.Product"
+		parameterType="string">
+		SELECT
+		<include refid="result"></include>
+		FROM BASE_PRODUCT
+		WHERE ID=#{id}
+	</select>
+	<select id="findMany" resultType="com.nano.domain.base.Product"
+		parameterType="com.nano.domain.base.Product">
+		SELECT
+		<include refid="result"></include>
+		FROM BASE_PRODUCT
+		WHERE 1=1
+		<if test="shortName != null and shortName != ''">
+			AND SHORT_NAME LIKE CONCAT(#{shortName},'%')
+		</if>
+		<if test="fullName != null and fullName != ''">
+			AND FULL_NAME LIKE CONCAT(#{fullName},'%')
+		</if>
+		<if test="code != null and code != ''">
+			AND CODE=#{code}
+		</if>
+		<if test="brandId != null and brandId != ''">
+			AND BRAND_ID=#{brandId}
+		</if>
+		<if test="categoryId != null and categoryId != ''">
+			AND CATEGORY_ID=#{categoryId}
+		</if>
+		<if test="contactId != null and contactId != ''">
+			AND CONTACT_ID=#{contactId}
+		</if>
+		<if test="shopId != null and shopId != ''">
+			AND SHOP_ID=#{shopId}
+		</if>
+	</select>
+	<insert id="saveOne" parameterType="com.nano.domain.base.Product">
+		INSERT INTO
+		BASE_PRODUCT (
+		ID,SHORT_NAME,FULL_NAME,CODE,BRAND_ID,CATEGORY_ID,CONTACT_ID,SHOP_ID,CREATOR,MODIFIER,CREATED,MODIFIED,VERSION
+		) VALUES(
+		#{id},#{shortName},#{fullName},#{code},#{brandId},#{categoryId},#{contactId},#{shopId},#{creator},#{modifier},now(),#{modified},#{version}
+		)
+	</insert>
+	<insert id="saveMany" parameterType="map">
+		INSERT INTO BASE_PRODUCT (
+		ID,SHORT_NAME,FULL_NAME,CODE,BRAND_ID,CATEGORY_ID,CONTACT_ID,SHOP_ID,CREATOR,MODIFIER,CREATED,MODIFIED,VERSION)
+		VALUES
+		<foreach collection="list" item="item" separator=",">
+			(
+			#{item.id},
+			#{item.shortName},
+			#{item.fullName},
+			#{item.code},
+			#{item.brandId},
+			#{item.categoryId},
+			#{item.contactId},
+			#{item.shopId},
+			#{item.modifier},
+			now(),
+			#{item.modified},
+			#{item.version}
+			)
+		</foreach>
+	</insert>
+	<update id="updateOne" parameterType="com.nano.domain.base.Product">
+		UPDATE BASE_PRODUCT SET
+		SHORT_NAME=#{shortName},FULL_NAME=#{fullName},CODE=#{code},BRAND_ID=#{brandId},CATEGORY_ID=#{categoryId},CONTACT_ID=#{contactId},SHOP_ID=#{shopId},MODIFIED=now(),VERSION=VERSION + 1
+		WHERE ID=#{id} AND VERSION=#{version}
+	</update>
+	<delete id="deleteOne" parameterType="com.nano.domain.base.Product">
+		DELETE FROM BASE_PRODUCT
+		WHERE ID = #{id} AND VERSION = #{version}
+	</delete>
+</mapper>

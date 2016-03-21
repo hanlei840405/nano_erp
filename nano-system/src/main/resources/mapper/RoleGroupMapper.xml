@@ -1,0 +1,33 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nano.persistence.system.RoleGroupMapper">
+	<select id="findMany" resultType="map" parameterType="map">
+		SELECT * FROM SYS_ROLE_GROUP
+		WHERE 1=1
+		<if test="roleId != null and roleId != ''">
+			AND ROLE_ID = #{roleId}
+		</if>
+		<if test="groupId != null and groupId != ''">
+			AND GROUP_ID = #{groupId}
+		</if>
+	</select>
+	<insert id="saveMany" parameterType="map">
+		INSERT INTO SYS_ROLE_GROUP (
+		ROLE_ID,GROUP_ID) 
+		VALUES
+		<foreach collection="list" item="item" separator=",">
+			(
+			#{item.roleId},
+			#{item.groupId}
+			)
+		</foreach>
+	</insert>
+	<delete id="deleteMany" parameterType="map">
+		DELETE FROM SYS_ROLE_GROUP WHERE 1=1
+		<if test="roleId != null and roleId != ''">
+			AND ROLE_ID = #{roleId}
+		</if>
+		<if test="groupId != null and groupId != ''">
+			AND GROUP_ID = #{groupId}
+		</if>
+	</delete>
+</mapper>

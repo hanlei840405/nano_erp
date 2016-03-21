@@ -1,0 +1,89 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nano.persistence.base.StockMapper">
+	<sql id="result">
+		ID,
+		CREATED,
+		MODIFIED,
+		VERSION,
+		SKU_ID AS skuId,
+		PRODUCT_ID AS productId,
+		WAREHOUSE_ID AS warehouseId,
+		QUANTITY,
+		SAFE_QUANTITY AS safeQuantity,
+		CREATOR,
+		MODIFIER
+	</sql>
+	<select id="findOne" resultType="com.nano.domain.base.Stock"
+		parameterType="string">
+		SELECT
+		<include refid="result"></include>
+		FROM BASE_STOCK
+		WHERE ID=#{id}
+	</select>
+	<select id="findMany" resultType="com.nano.domain.base.Stock"
+		parameterType="map">
+		SELECT
+		T1.ID,
+		T1.CREATED,
+		T1.MODIFIED,
+		T1.VERSION,
+		T1.SKU_ID AS skuId,
+		T1.PRODUCT_ID AS productId,
+		T1.WAREHOUSE_ID AS warehouseId,
+		T1.QUANTITY,
+		T1.SAFE_QUANTITY AS safeQuantity,
+		T1.CREATOR,
+		T1.MODIFIER
+		FROM BASE_STOCK T1
+		<if test="productCode != null and productCode != ''">
+		INNER JOIN BASE_PRODUCT T2 ON T1.PRODUCT_ID=T2.ID AND T2.CODE LIKE CONCAT(#{productCode},'%')
+		</if>
+		<if test="barcode != null and barcode != ''">
+		INNER JOIN BASE_SKU T3 ON T1.SKU_ID=T3.ID AND T3.BARCODE LIKE CONCAT(#{barcode},'%')
+		</if>
+		<if test="warehouseId != null and warehouseId != ''">
+		INNER JOIN BASE_WAREHOUSE T4 ON T1.WAREHOUSE_ID=T4.ID AND T4.ID=#{warehouseId}
+		</if>
+		WHERE 1=1
+		<if test="skuId != null and skuId != ''">
+			AND SKU_ID=#{skuId}
+		</if>
+	</select>
+	<insert id="saveOne" parameterType="com.nano.domain.base.Stock">
+		INSERT INTO
+		BASE_STOCK (
+		ID,PRODUCT_ID,SKU_ID,WAREHOUSE_ID,QUANTITY,SAFE_QUANTITY,CREATOR,MODIFIER,CREATED,MODIFIED,VERSION
+		) VALUES(
+		#{id},#{productId},#{skuId},#{warehouseId},#{quantity},#{safeQuantity},#{creator},#{modifier},now(),#{modified},#{version}
+		)
+	</insert>
+	<insert id="saveMany" parameterType="map">
+		INSERT INTO BASE_STOCK (
+		ID,PRODUCT_ID,SKU_ID,WAREHOUSE_ID,QUANTITY,SAFE_QUANTITY,CREATOR,MODIFIER,CREATED,MODIFIED,VERSION)
+		VALUES
+		<foreach collection="stocks" item="item" separator=",">
+			(
+			#{item.id},
+			#{item.productId},
+			#{item.skuId},
+			#{item.warehouseId},
+			#{item.quantity},
+			#{item.safeQuantity},
+			#{item.creator},
+			#{item.modifier},
+			now(),
+			#{item.modified},
+			#{item.version}
+			)
+		</foreach>
+	</insert>
+	<update id="updateOne" parameterType="com.nano.domain.base.Stock">
+		UPDATE BASE_STOCK SET
+		PRODUCT_ID=#{productId},PRODUCT_ID=#{productId},SKU_ID=#{skuId},WAREHOUSE_ID=#{warehouseId},QUANTITY=#{quantity},SAFE_QUANTITY=#{safeQuantity},MODIFIED=now(),VERSION=VERSION + 1
+		WHERE ID=#{id} AND VERSION=#{version}
+	</update>
+	<delete id="deleteOne" parameterType="com.nano.domain.base.Stock">
+		DELETE FROM BASE_STOCK
+		WHERE ID = #{id} AND VERSION = #{version}
+	</delete>
+</mapper>

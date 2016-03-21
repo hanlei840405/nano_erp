@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+	http://code.alibabatech.com/schema/dubbo http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+	<!-- consumer application name -->
+	<dubbo:application name="oms" />
+
+	<!-- registry address, used for consumer to discover services -->
+	<dubbo:registry protocol="zookeeper"
+		address="master:2181,slave-01:2181,slave-02:2181" />
+	<dubbo:consumer timeout="5000" />
+	<!-- which service to consume? -->
+	<dubbo:reference id="departmentService" version="1.0.0" interface="com.nano.service.system.DepartmentService" />
+	<dubbo:reference id="userService" version="1.0.0" interface="com.nano.service.system.UserService" />
+	<dubbo:reference id="groupService" version="1.0.0" interface="com.nano.service.system.GroupService" />
+	<dubbo:reference id="menuService" version="1.0.0" interface="com.nano.service.system.MenuService" />
+	<dubbo:reference id="roleService" version="1.0.0" interface="com.nano.service.system.RoleService" />
+	<dubbo:reference id="privilegeService" version="1.0.0" interface="com.nano.service.system.PrivilegeService" />
+	<dubbo:reference id="functionService" version="1.0.0" interface="com.nano.service.system.FunctionService" />
+	<dubbo:reference id="elementService" version="1.0.0" interface="com.nano.service.system.ElementService" />
+	<dubbo:reference id="brandService" version="1.0.0" interface="com.nano.service.base.BrandService" />
+	<dubbo:reference id="categoryService" version="1.0.0" interface="com.nano.service.base.CategoryService" />
+	<dubbo:reference id="brandCategoryService" version="1.0.0" interface="com.nano.service.base.BrandCategoryService" />
+	<dubbo:reference id="dictionaryService" version="1.0.0" interface="com.nano.service.base.DictionaryService" />
+	<dubbo:reference id="dictionaryItemService" version="1.0.0" interface="com.nano.service.base.DictionaryItemService" />
+	<dubbo:reference id="expressService" version="1.0.0" interface="com.nano.service.base.ExpressService" />
+	<dubbo:reference id="markService" version="1.0.0" interface="com.nano.service.base.MarkService" />
+	<dubbo:reference id="memberService" version="1.0.0" interface="com.nano.service.base.MemberService" />
+	<dubbo:reference id="noteService" version="1.0.0" interface="com.nano.service.base.NoteService" />
+	<dubbo:reference id="platformService" version="1.0.0" interface="com.nano.service.base.PlatformService" />
+	<dubbo:reference id="platformExpressService" version="1.0.0" interface="com.nano.service.base.PlatformExpressService" />
+	<dubbo:reference id="productService" version="1.0.0" interface="com.nano.service.base.ProductService" />
+	<dubbo:reference id="regionService" version="1.0.0" interface="com.nano.service.base.RegionService" />
+	<dubbo:reference id="regionExpressService" version="1.0.0" interface="com.nano.service.base.RegionExpressService" />
+	<dubbo:reference id="contactService" version="1.0.0" interface="com.nano.service.base.ContactService" />
+	<dubbo:reference id="skuService" version="1.0.0" interface="com.nano.service.base.SkuService" />
+	<dubbo:reference id="shopService" version="1.0.0" interface="com.nano.service.base.ShopService" />
+	<dubbo:reference id="shopCategoryService" version="1.0.0" interface="com.nano.service.base.ShopCategoryService" />
+	<dubbo:reference id="shopPropertyService" version="1.0.0" interface="com.nano.service.base.ShopPropertyService" />
+	<dubbo:reference id="smsService" version="1.0.0" interface="com.nano.service.base.SmsService" />
+	<dubbo:reference id="smsTemplateService" version="1.0.0" interface="com.nano.service.base.SmsTemplateService" />
+	<dubbo:reference id="stockService" version="1.0.0" interface="com.nano.service.base.StockService" />
+	<dubbo:reference id="storageService" version="1.0.0" interface="com.nano.service.base.StorageService" />
+	<dubbo:reference id="warehouseService" version="1.0.0" interface="com.nano.service.base.WarehouseService" />
+	<dubbo:reference id="warehouseBrandService" version="1.0.0" interface="com.nano.service.base.WarehouseBrandService" />
+	<dubbo:reference id="taoBaoProductService" version="1.0.0" interface="com.nano.service.productmapping.TaoBaoProductService" />
+	<dubbo:reference id="jingDongProductService" version="1.0.0" interface="com.nano.service.productmapping.JingDongProductService" />
+	<dubbo:reference id="dangDangProductService" version="1.0.0" interface="com.nano.service.productmapping.DangDangProductService" />
+</beans>

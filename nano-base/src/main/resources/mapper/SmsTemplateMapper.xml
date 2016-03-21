@@ -1,0 +1,76 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nano.persistence.base.SmsTemplateMapper">
+	<sql id="result">
+		ID,
+		CREATED,
+		MODIFIED,
+		NAME,
+		CODE,
+		TEMPLATE,
+		CREATOR,
+		MODIFIER,
+		VERSION
+	</sql>
+	<select id="findOne" resultType="com.nano.domain.base.SmsTemplate"
+		parameterType="string">
+		SELECT
+		<include refid="result"></include>
+		FROM BASE_SMS_TEMPLATE
+		WHERE ID=#{id}
+	</select>
+	<select id="findMany" resultType="com.nano.domain.base.SmsTemplate"
+		parameterType="com.nano.domain.base.SmsTemplate">
+		SELECT
+		<include refid="result"></include>
+		FROM BASE_SMS_TEMPLATE
+		WHERE 1=1
+		<if test="name != null and name != ''">
+			AND NAME LIKE CONCAT(CANCAT('%',#{name}),'%')
+		</if>
+		<if test="code != null and code != ''">
+			AND CODE LIKE CONCAT(CANCAT('%',#{code}),'%')
+		</if>
+	</select>
+	<insert id="saveOne" parameterType="com.nano.domain.base.SmsTemplate">
+		INSERT INTO
+		BASE_SMS_TEMPLATE
+		(
+		ID,NAME,CODE,TEMPLATE,CREATOR,MODIFIER,CREATED,MODIFIED,VERSION
+		)
+		VALUES(
+		#{id},#{name},#{code},#{template},#{creator},#{modifier},now(),#{modified},#{version}
+		)
+	</insert>
+	<insert id="saveMany" parameterType="map">
+		INSERT INTO BASE_SMS_TEMPLATE (
+		ID,NAME,CODE,TEMPLATE,CREATOR,MODIFIER,CREATED,MODIFIED,VERSION)
+		VALUES
+		<foreach collection="list" item="item" separator=",">
+			(
+			#{item.id},
+			#{item.name},
+			#{item.code},
+			#{item.template},
+			#{item.creator},
+			#{item.modifier},
+			now(),
+			#{item.modified},
+			#{item.modified},
+			#{item.version}
+			)
+		</foreach>
+	</insert>
+	<update id="updateOne" parameterType="com.nano.domain.base.SmsTemplate">
+		UPDATE BASE_SMS_TEMPLATE
+		SET
+		NAME=#{name},CODE=#{code},TEMPLATE=#{template},MODIFIED=now(),VERSION=VERSION
+		+ 1
+		WHERE ID=#{id} AND VERSION=#{version}
+	</update>
+	<delete id="deleteOne" parameterType="com.nano.domain.base.SmsTemplate">
+		DELETE FROM
+		BASE_SMS_TEMPLATE
+		WHERE
+		ID = #{id} AND VERSION=#{version}
+	</delete>
+</mapper>

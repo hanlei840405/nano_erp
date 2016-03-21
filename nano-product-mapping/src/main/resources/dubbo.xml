@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+	http://code.alibabatech.com/schema/dubbo http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+	<!-- consumer application name -->
+	<dubbo:application name="product-mapping" />
+
+	<!-- registry address, used for consumer to discover services -->
+	<dubbo:registry protocol="zookeeper" address="master:2181,slave-01:2181,slave-02:2181" />
+	<dubbo:protocol name="dubbo" port="20881" />
+ 
+    <dubbo:service interface="com.nano.service.productmapping.TaoBaoProductService" ref="taoBaoProductServiceImpl" version="1.0.0"/>
+    <dubbo:service interface="com.nano.service.productmapping.JingDongProductService" ref="jingDongProductServiceImpl" version="1.0.0"/>
+	<dubbo:consumer timeout="5000" />
+	<!-- which service to consume? -->
+	<dubbo:reference id="productService" version="1.0.0" interface="com.nano.service.base.ProductService" />
+	<dubbo:reference id="skuService" version="1.0.0" interface="com.nano.service.base.SkuService" />
+	<dubbo:reference id="shopPropertyService" version="1.0.0" interface="com.nano.service.base.ShopPropertyService" />
+	<dubbo:reference id="stockService" version="1.0.0" interface="com.nano.service.base.StockService" />
+</beans>

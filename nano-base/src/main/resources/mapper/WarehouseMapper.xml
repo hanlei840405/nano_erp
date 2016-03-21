@@ -1,0 +1,80 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nano.persistence.base.WarehouseMapper">
+	<sql id="result">
+		ID,
+		CREATED,
+		MODIFIED,
+		VERSION,
+		NAME,
+		CODE,
+		STATUS,
+		CREATOR,
+		MODIFIER
+	</sql>
+	<select id="findOne" resultType="com.nano.domain.base.Warehouse"
+		parameterType="string">
+		SELECT
+		<include refid="result"></include>
+		FROM BASE_WAREHOUSE
+		WHERE ID=#{id}
+	</select>
+	<select id="findMany" resultType="com.nano.domain.base.Warehouse"
+		parameterType="map">
+		SELECT
+		T1.ID,
+		T1.CREATED,
+		T1.MODIFIED,
+		T1.VERSION,
+		T1.NAME,
+		T1.CODE,
+		T1.STATUS,
+		T1.CREATOR,
+		T1.MODIFIER
+		FROM BASE_WAREHOUSE T1
+		<if test="brandId != null and brandId != ''">
+		INNER JOIN BASE_WAREHOUSE_BRAND T2 ON T1.ID = T2.WAREHOUSE_ID AND T2.BRAND_ID=#{brandId}
+		</if>
+		WHERE 1=1
+		<if test="code != null and code != ''">
+			AND CODE=#{code}
+		</if>
+		<if test="status != null and status != ''">
+			AND STATUS=#{status}
+		</if>
+	</select>
+	<insert id="saveOne" parameterType="com.nano.domain.base.Warehouse">
+		INSERT INTO
+		BASE_WAREHOUSE (
+		ID,NAME,CODE,STATUS,CREATOR,MODIFIER,CREATED,MODIFIED,VERSION
+		) VALUES(
+		#{id},#{name},#{code},#{status},#{creator},#{modifier},now(),#{modified},#{version}
+		)
+	</insert>
+	<insert id="saveMany" parameterType="map">
+		INSERT INTO BASE_WAREHOUSE (
+		ID,NAME,CODE,STATUS,CREATOR,MODIFIER,CREATED,MODIFIED,VERSION)
+		VALUES
+		<foreach collection="list" item="item" separator=",">
+			(
+			#{item.id},
+			#{item.name},
+			#{item.code},
+			#{item.status},
+			#{item.creator},
+			#{item.modifier},
+			now(),
+			#{item.modified},
+			#{item.version}
+			)
+		</foreach>
+	</insert>
+	<update id="updateOne" parameterType="com.nano.domain.base.Warehouse">
+		UPDATE BASE_WAREHOUSE SET
+		NAME=#{name},CODE=#{code},STATUS=#{status},MODIFIED=now(),VERSION=VERSION + 1
+		WHERE ID=#{id} AND VERSION=#{version}
+	</update>
+	<delete id="deleteOne" parameterType="com.nano.domain.base.Warehouse">
+		DELETE FROM BASE_WAREHOUSE
+		WHERE ID = #{id} AND VERSION = #{version}
+	</delete>
+</mapper>

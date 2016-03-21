@@ -1,0 +1,54 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nano.persistence.base.RegionExpressMapper">
+	<sql id="result">
+		REGION_ID AS regionId,
+		EXPRESS_ID AS expressId,
+		PRIORITY
+	</sql>
+	<select id="findMany" resultType="com.nano.domain.base.RegionExpress"
+		parameterType="com.nano.domain.base.RegionExpress">
+		SELECT
+		<include refid="result"></include>
+		FROM BASE_REGION_EXPRESS
+		WHERE 1=1
+		<if test="regionId != null and regionId != ''">
+			AND REGION_ID=#{regionId}
+		</if>
+		<if test="expressId != null and expressId != ''">
+			AND EXPRESS_ID=#{expressId}
+		</if>
+		<if test="priority != null and priority != ''">
+			AND PRIORITY=#{priority}
+		</if>
+	</select>
+	<insert id="saveOne" parameterType="com.nano.domain.base.RegionExpress">
+		INSERT INTO
+		BASE_REGION_EXPRESS (
+		REGION_ID,EXPRESS_ID,PRIORITY
+		) VALUES(
+		#{regionId},#{expressId},#{priority}
+		)
+	</insert>
+	<insert id="saveMany" parameterType="map">
+		INSERT INTO BASE_REGION_EXPRESS (
+		REGION_ID,EXPRESS_ID,PRIORITY)
+		VALUES
+		<foreach collection="regionExpresses" item="item" separator=",">
+			(
+			#{item.regionId},
+			#{item.expressId},
+			#{item.priority}
+			)
+		</foreach>
+	</insert>
+	<delete id="delete" parameterType="com.nano.domain.base.RegionExpress">
+		DELETE FROM BASE_REGION_EXPRESS
+		WHERE 1=1
+		<if test="regionId != null and regionId != ''">
+			AND REGION_ID=#{regionId}
+		</if>
+		<if test="expressId != null and expressId != ''">
+			AND EXPRESS_ID=#{expressId}
+		</if>
+	</delete>
+</mapper>

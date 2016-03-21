@@ -1,0 +1,84 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nano.persistence.system.PrivilegeMapper">
+	<sql id="result">
+		ID,
+		CREATED,
+		MODIFIED,
+		VERSION,
+		CODE,
+		NAME,
+		CREATOR,
+		MODIFIER,
+		CATEGORY
+	</sql>
+	<select id="findOne" resultType="com.nano.domain.system.Privilege" parameterType="string">
+		SELECT * FROM SYS_PRIVILEGE
+		WHERE ID=#{id}
+	</select>
+	<select id="findMany" resultType="com.nano.domain.system.Privilege" parameterType="map">
+		SELECT T1.*
+		FROM SYS_PRIVILEGE T1 
+		<if test="menuId != null and menuId !=''">
+			INNER JOIN SYS_MENU_PRIVILEGE T2 ON T1.ID=T2.PRIVILEGE_ID AND T2.MENU_ID=#{menuId}
+		</if>
+		<if test="functionId != null and functionId !=''">
+			INNER JOIN SYS_FUNCTION_PRIVILEGE T3 ON T1.ID=T3.PRIVILEGE_ID AND T3.FUNCTION_ID=#{functionId}
+		</if>
+		<if test="elementId != null and elementId !=''">
+			INNER JOIN SYS_ELEMENT_PRIVILEGE T4 ON T1.ID=T4.PRIVILEGE_ID AND T4.ELEMENT_ID=#{elementId}
+		</if>
+		<if test="roleId != null and roleId !=''">
+			INNER JOIN SYS_ROLE_PRIVILEGE T5 ON T1.ID=T5.PRIVILEGE_ID AND T5.ROLE_ID=#{roleId}
+		</if>
+		WHERE 1=1
+		<if test="elementId != null and elementId !=''">
+			AND T1.CATEGORY = #{category}
+		</if>
+	</select>
+	<insert id="saveOne" parameterType="com.nano.domain.system.Privilege">
+		INSERT INTO
+		SYS_PRIVILEGE (
+		ID,CODE,NAME,CATEGORY,CREATOR,MODIFIER,CREATED,MODIFIED,VERSION
+		) VALUES(
+		#{id},#{code},#{name},#{category},#{creator},#{modifier},now(),#{modified},#{version}
+		)
+	</insert>
+	<insert id="saveMany" parameterType="map">
+		INSERT INTO SYS_PRIVILEGE (
+		ID,CODE,NAME,CATEGORY,CREATOR,MODIFIER,CREATED,MODIFIED,VERSION)
+		VALUES
+		<foreach collection="list" item="item" separator=",">
+			(
+			#{item.id},
+			#{item.code},
+			#{item.name},
+			#{item.category},
+			#{item.creator},
+			#{item.modifier},
+			now(),
+			#{item.modified},
+			#{item.version}
+			)
+		</foreach>
+	</insert>
+	<update id="updateOne" parameterType="com.nano.domain.system.Privilege">
+		UPDATE SYS_PRIVILEGE SET CODE=#{code},NAME=#{name},CATEGORY=#{category},MODIFIER=#{modifier},MODIFIED=now(),VERSION=VERSION + 1
+		WHERE ID=#{id} AND VERSION=#{version}
+	</update>
+	<update id="updateMany" parameterType="map">
+		<foreach collection="functions" item="item" separator=";">
+			UPDATE SYS_PRIVILEGE SET CODE=#{item.code},NAME=#{item.name},CATEGORY=#{item.category},MODIFIER=#{item.modifier},MODIFIED=now(),VERSION=VERSION + 1
+			WHERE ID=#{item.id} AND VERSION=#{item.version}
+		</foreach>
+	</update>
+	<delete id="deleteOne" parameterType="com.nano.domain.system.Privilege">
+		DELETE FROM SYS_PRIVILEGE WHERE ID = #{id} AND VERSION=#{version}
+	</delete>
+	<delete id="deleteMany" parameterType="map">
+		DELETE FROM SYS_PRIVILEGE WHERE ID IN (
+		<foreach collection="list" item="id" separator=",">
+			#{id}
+		</foreach>
+		)
+	</delete>
+</mapper>

@@ -1,0 +1,33 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nano.persistence.system.UserGroupMapper">
+	<select id="findMany" resultType="map" parameterType="map">
+		SELECT * FROM SYS_USER_GROUP
+		WHERE 1=1
+		<if test="userId != null and userId != ''">
+			AND USER_ID = #{userId}
+		</if>
+		<if test="groupId != null and groupId != ''">
+			AND GROUP_ID = #{groupId}
+		</if>
+	</select>
+	<insert id="saveMany" parameterType="map">
+		INSERT INTO SYS_USER_GROUP (
+		USER_ID,GROUP_ID) 
+		VALUES
+		<foreach collection="list" item="item" separator=",">
+			(
+			#{item.userId},
+			#{item.groupId}
+			)
+		</foreach>
+	</insert>
+	<delete id="deleteMany" parameterType="map">
+		DELETE FROM SYS_USER_GROUP WHERE 1=1
+		<if test="userId != null and userId != ''">
+			AND USER_ID = #{userId}
+		</if>
+		<if test="groupId != null and groupId != ''">
+			AND GROUP_ID = #{groupId}
+		</if>
+	</delete>
+</mapper>

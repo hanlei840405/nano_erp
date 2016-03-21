@@ -1,0 +1,107 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nano.persistence.system.FunctionMapper">
+	<sql id="result">
+		ID,
+		CREATED,
+		MODIFIED,
+		VERSION,
+		CODE,
+		NAME,
+		URL,
+		CREATOR,
+		MODIFIER,
+		MENU_ID AS menuId
+	</sql>
+	<select id="findOne" resultType="com.nano.domain.system.Function"
+		parameterType="string">
+		SELECT
+		<include refid="result"></include>
+		FROM SYS_FUNCTION
+		WHERE ID=#{id}
+	</select>
+	<select id="findManyByMenu" resultType="com.nano.domain.system.Function"
+		parameterType="string">
+		SELECT
+		<include refid="result"></include>
+		FROM SYS_FUNCTION WHERE MENU_ID = #{menuId}
+	</select>
+	<select id="findManyByPrivilege" resultType="com.nano.domain.system.Function"
+		parameterType="string">
+		SELECT 
+		T1.ID,
+		T1.CREATED,
+		T1.MODIFIED,
+		T1.VERSION,
+		T1.CODE,
+		T1.NAME,
+		T1.URL,
+		T1.CREATOR,
+		T1.MODIFIER,
+		T1.MENU_ID AS menuId
+		FROM SYS_FUNCTION T1 INNER JOIN SYS_FUNCTION_PRIVILEGE T2 ON T1.ID=T2.FUNCTION_ID
+		WHERE T2.PRIVILEGE_ID = #{privilegeId}
+	</select>
+	<insert id="saveOne" parameterType="com.nano.domain.system.Function">
+		INSERT INTO
+		SYS_FUNCTION (
+		ID,CODE,NAME,URL,MENU_ID,CREATOR,MODIFIER,CREATED,MODIFIED,VERSION
+		)
+		VALUES(
+		#{id},#{code},#{name},#{url},#{menuId},#{creator},#{modifier},now(),#{modified},#{version}
+		)
+	</insert>
+	<insert id="saveMany" parameterType="map">
+		INSERT INTO SYS_FUNCTION (
+		ID,CODE,NAME,URL,MENU_ID,CREATOR,MODIFIER,CREATED,MODIFIED,VERSION)
+		VALUES
+		<foreach collection="list" item="item" separator=",">
+			(
+			#{item.id},
+			#{item.code},
+			#{item.name},
+			#{item.url},
+			#{item.menuId},
+			#{item.creator},
+			#{item.modifier},
+			#{item.created},
+			#{item.modified},
+			#{item.version}
+			)
+		</foreach>
+	</insert>
+	<update id="updateOne" parameterType="com.nano.domain.system.Function">
+		UPDATE SYS_FUNCTION SET
+		CODE=#{code},NAME=#{name},URL=#{url},MENU_ID=#{menuId},MODIFIER=#{modifier},MODIFIED=now(),VERSION=VERSION
+		+ 1
+		WHERE ID=#{id} AND VERSION=#{version}
+	</update>
+	<update id="updateMany" parameterType="map">
+		<foreach collection="list" item="item" separator=";">
+			UPDATE
+			SYS_FUNCTION SET
+			CODE=#{item.code},NAME=#{item.name},URL=#{item.url},MENU_ID=#{item.menuId},MODIFIER=#{item.modifier},MODIFIED=now(),VERSION=VERSION
+			+ 1
+			WHERE ID=#{item.id} AND VERSION=#{item.version}
+		</foreach>
+	</update>
+	<delete id="delete" parameterType="com.nano.domain.system.Function">
+		DELETE FROM SYS_FUNCTION WHERE VERSION = #{version}
+		<if test="id != null and id != ''">
+			AND ID = #{id}
+		</if>
+		<if test="menuId != null and menuId != ''">
+			AND MENU_ID = #{menuId}
+		</if>
+	</delete>
+	<delete id="deleteByMenu" parameterType="string">
+		DELETE FROM SYS_FUNCTION
+		WHERE MENU_ID = #{menuId}
+	</delete>
+	<delete id="deleteMany" parameterType="map">
+		DELETE FROM SYS_FUNCTION WHERE ID IN (
+		<foreach collection="list" item="id" separator=",">
+			#{id}
+		</foreach>
+		)
+	</delete>
+</mapper>

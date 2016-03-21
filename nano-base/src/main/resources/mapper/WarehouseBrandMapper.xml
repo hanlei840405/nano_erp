@@ -1,0 +1,49 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nano.persistence.base.WarehouseBrandMapper">
+	<sql id="result">
+		WAREHOUSE_ID AS warehouseId,
+		BRAND_ID AS brandId
+	</sql>
+	<select id="findMany" resultType="com.nano.domain.base.WarehouseBrand"
+		parameterType="com.nano.domain.base.WarehouseBrand">
+		SELECT
+		<include refid="result"></include>
+		FROM BASE_WAREHOUSE_BRAND
+		WHERE 1=1
+		<if test="warehouseId != null and warehouseId != ''">
+			AND WAREHOUSE_ID=#{warehouseId}
+		</if>
+		<if test="brandId != null and brandId != ''">
+			AND BRAND_ID=#{brandId}
+		</if>
+	</select>
+	<insert id="saveOne" parameterType="com.nano.domain.base.WarehouseBrand">
+		INSERT INTO
+		BASE_WAREHOUSE_BRAND (
+		WAREHOUSE_ID,BRAND_ID
+		) VALUES(
+		#{warehouseId},#{brandId}
+		)
+	</insert>
+	<insert id="saveMany" parameterType="map">
+		INSERT INTO BASE_WAREHOUSE_BRAND (
+		WAREHOUSE_ID,BRAND_ID)
+		VALUES
+		<foreach collection="list" item="item" separator=",">
+			(
+			#{item.warehouseId},
+			#{item.brandId}
+			)
+		</foreach>
+	</insert>
+	<delete id="delete" parameterType="com.nano.domain.base.WarehouseBrand">
+		DELETE FROM BASE_WAREHOUSE_BRAND
+		WHERE 1=1
+		<if test="warehouseId != null and warehouseId != ''">
+			AND WAREHOUSE_ID=#{warehouseId}
+		</if>
+		<if test="brandId != null and brandId != ''">
+			AND BRAND_ID=#{brandId}
+		</if>
+	</delete>
+</mapper>

@@ -1,0 +1,67 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nano.persistence.base.ShopPropertyMapper">
+	<sql id="result">
+		ID,
+		CREATED,
+		MODIFIED,
+		VERSION,
+		SHOP_ID AS shopId,
+		CODE,
+		VALUE,
+		CREATOR,
+		MODIFIER
+	</sql>
+	<select id="findOne" resultType="com.nano.domain.base.ShopProperty"
+		parameterType="string">
+		SELECT
+		<include refid="result"></include>
+		FROM BASE_SHOP_PROPERTY
+		WHERE ID=#{id}
+	</select>
+	<select id="findMany" resultType="com.nano.domain.base.ShopProperty">
+		SELECT
+		<include refid="result"></include>
+		FROM BASE_SHOP_PROPERTY
+		WHERE 1=1
+		<if test="shopId != null and shopId != ''">
+			AND SHOP_ID=#{shopId}
+		</if>
+	</select>
+	<insert id="saveOne" parameterType="com.nano.domain.base.ShopProperty">
+		INSERT INTO
+		BASE_SHOP_PROPERTY (
+		ID,SHOP_ID,CODE,VALUE,CREATOR,MODIFIER,CREATED,MODIFIED,VERSION
+		) VALUES(
+		#{id},#{shopId},#{code},#{value},#{creator},#{modifier},now(),#{modified},#{version}
+		)
+	</insert>
+	<insert id="saveMany" parameterType="map">
+		INSERT INTO BASE_SHOP_PROPERTY (
+		ID,SHOP_ID,CODE,VALUE,CREATOR,MODIFIER,CREATED,MODIFIED,VERSION)
+		VALUES
+		<foreach collection="list" item="item" separator=",">
+			(
+			#{item.id},
+			#{item.shopId},
+			#{item.code},
+			#{item.value},
+			#{item.creator},
+			#{item.modifier},
+			now(),
+			#{item.modified},
+			#{item.version}
+			)
+		</foreach>
+	</insert>
+	<update id="updateOne" parameterType="com.nano.domain.base.ShopProperty">
+		UPDATE BASE_SHOP_PROPERTY SET CODE=#{code},VALUE=#{value},VERSION=VERSION + 1 WHERE ID=#{id} AND VERSION=#{version}
+	</update>
+	<delete id="deleteOne" parameterType="com.nano.domain.base.ShopProperty">
+		DELETE FROM BASE_SHOP_PROPERTY
+		WHERE ID = #{id} AND VERSION = #{version}
+	</delete>
+	<delete id="deleteByParent" parameterType="string">
+		DELETE FROM BASE_SHOP_PROPERTY
+		WHERE SHOP_ID = #{shopId}
+	</delete>
+</mapper>

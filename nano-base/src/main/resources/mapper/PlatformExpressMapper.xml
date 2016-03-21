@@ -1,0 +1,59 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nano.persistence.base.PlatformExpressMapper">
+	<sql id="result">
+		PLATFORM_ID AS platformId,
+		EXPRESS_ID AS expressId,
+		ALIAS,
+		CODE
+	</sql>
+	<select id="findMany" resultType="com.nano.domain.base.PlatformExpress"
+		parameterType="com.nano.domain.base.PlatformExpress">
+		SELECT
+		<include refid="result"></include>
+		FROM BASE_PLATFORM_EXPRESS
+		WHERE 1=1
+		<if test="platformId != null and platformId != ''">
+			AND PLATFORM_ID=#{platformId}
+		</if>
+		<if test="expressId != null and expressId != ''">
+			AND EXPRESS_ID=#{expressId}
+		</if>
+		<if test="alias != null and alias != ''">
+			AND ALIAS=#{alias}
+		</if>
+		<if test="code != null and code != ''">
+			AND CODE=#{code}
+		</if>
+	</select>
+	<insert id="saveOne" parameterType="com.nano.domain.base.PlatformExpress">
+		INSERT INTO
+		BASE_PLATFORM_EXPRESS (
+		PLATFORM_ID,EXPRESS_ID,ALIAS,CODE
+		) VALUES(
+		#{platformId},#{expressId},#{alias},#{code}
+		)
+	</insert>
+	<insert id="saveMany" parameterType="map">
+		INSERT INTO BASE_PLATFORM_EXPRESS (
+		PLATFORM_ID,EXPRESS_ID,ALIAS,CODE)
+		VALUES
+		<foreach collection="platformExpresses" item="item" separator=",">
+			(
+			#{item.platformId},
+			#{item.expressId},
+			#{item.alias},
+			#{item.code}
+			)
+		</foreach>
+	</insert>
+	<delete id="delete" parameterType="com.nano.domain.base.PlatformExpress">
+		DELETE FROM BASE_PLATFORM_EXPRESS
+		WHERE 1=1
+		<if test="platformId != null and platformId != ''">
+			AND PLATFORM_ID=#{platformId}
+		</if>
+		<if test="expressId != null and expressId != ''">
+			AND EXPRESS_ID=#{expressId}
+		</if>
+	</delete>
+</mapper>

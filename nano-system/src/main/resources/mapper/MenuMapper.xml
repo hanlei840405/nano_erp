@@ -1,0 +1,101 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nano.persistence.system.MenuMapper">
+	<sql id="result">
+		ID,
+		CREATED,
+		MODIFIED,
+		VERSION,
+		CODE,
+		NAME,
+		POSITION,
+		URL,
+		CREATOR,
+		MODIFIER,
+		PARENT_ID AS PARENTID
+	</sql>
+	<select id="findOne" resultType="com.nano.domain.system.Menu" parameterType="string">
+		SELECT <include refid="result"></include> FROM SYS_MENU
+		WHERE ID=#{id}
+	</select>
+	<select id="findRoots" resultType="com.nano.domain.system.Menu">
+		SELECT <include refid="result"></include> FROM SYS_MENU
+		WHERE PARENT_ID IS NULL ORDER BY POSITION
+	</select>
+	<select id="findMany" resultType="com.nano.domain.system.Menu" parameterType="com.nano.domain.system.Menu">
+		SELECT <include refid="result"></include> FROM SYS_MENU WHERE 1=1
+		<if test="code != null and code !=''">
+			AND CODE LIKE CONCAT('%',#{code},'%')
+		</if>
+		<if test="name != null and name !=''">
+			AND NAME = #{name}
+		</if>
+		<if test="parentId != null and parentId !=''">
+			AND PARENT_ID = #{parentId}
+		</if>
+		 ORDER BY POSITION
+	</select>
+	<select id="findManyByPrivilege" resultType="com.nano.domain.system.Menu" parameterType="string">
+		SELECT 
+		T1.ID,
+		T1.CREATED,
+		T1.MODIFIED,
+		T1.VERSION,
+		T1.CODE,
+		T1.NAME,
+		T1.POSITION,
+		T1.URL,
+		T1.CREATOR,
+		T1.MODIFIER,
+		T1.PARENT_ID AS PARENTID
+		FROM SYS_MENU T1 INNER JOIN SYS_MENU_PRIVILEGE T2 ON T1.ID=T2.MENU_ID
+		WHERE T2.PRIVILEGE_ID = #{privilegeId} ORDER BY POSITION
+	</select>
+	<insert id="saveOne" parameterType="com.nano.domain.system.Menu">
+		INSERT INTO
+		SYS_MENU (
+		ID,CODE,NAME,PARENT_ID,URL,POSITION,CREATOR,MODIFIER,CREATED,MODIFIED,VERSION
+		) VALUES(
+		#{id},#{code},#{name},#{parentId},#{url},#{position},#{creator},#{modifier},now(),#{modified},#{version}
+		)
+	</insert>
+	<insert id="saveMany" parameterType="map">
+		INSERT INTO SYS_MENU (
+		ID,CODE,NAME,PARENT_ID,URL,POSITION,CREATOR,MODIFIER,CREATED,MODIFIED,VERSION)
+		VALUES
+		<foreach collection="list" item="item" separator=",">
+			(
+			#{item.id},
+			#{item.code},
+			#{item.name},
+			#{item.parentId},
+			#{item.url},
+			#{item.position},
+			#{item.creator},
+			#{item.modifier},
+			now(),
+			#{item.modified},
+			#{item.version}
+			)
+		</foreach>
+	</insert>
+	<update id="updateOne" parameterType="com.nano.domain.system.Menu">
+		UPDATE SYS_MENU SET CODE=#{code},NAME=#{name},PARENT_ID=#{parentId},URL=#{url},POSITION=#{position},MODIFIER=#{modifier},MODIFIED=now(),VERSION=VERSION + 1
+		WHERE ID=#{id} AND VERSION=#{version}
+	</update>
+	<update id="updateMany" parameterType="map">
+		<foreach collection="functions" item="item" separator=";">
+			UPDATE SYS_MENU SET CODE=#{item.code},NAME=#{item.name},PARENT_ID=#{item.parentId},URL=#{item.url},POSITION=#{item.position},MODIFIER=#{item.modifier},MODIFIED=now(),VERSION=VERSION + 1
+			WHERE ID=#{item.id} AND VERSION=#{item.version}
+		</foreach>
+	</update>
+	<delete id="deleteOne" parameterType="com.nano.domain.system.Menu">
+		DELETE FROM SYS_MENU WHERE ID = #{id} AND VERSION=#{version}
+	</delete>
+	<delete id="deleteMany" parameterType="map">
+		DELETE FROM SYS_MENU WHERE ID IN (
+		<foreach collection="list" item="id" separator=",">
+			#{id}
+		</foreach>
+		)
+	</delete>
+</mapper>

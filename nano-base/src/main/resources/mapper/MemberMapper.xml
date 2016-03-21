@@ -1,0 +1,103 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nano.persistence.base.MemberMapper">
+	<sql id="result">
+		ID,
+		CREATED,
+		MODIFIED,
+		VERSION,
+		REAL_NAME AS realName,
+		NICK,
+		TELEPHONE,
+		MOBILE,
+		QQ,
+		MAIL,
+		MSN,
+		ACCOUNT,
+		ADDRESS,
+		OUTLAY,
+		VANTAGES,
+		CREATOR,
+		MODIFIER
+	</sql>
+	<select id="findOne" resultType="com.nano.domain.base.Member"
+		parameterType="string">
+		SELECT
+		<include refid="result"></include>
+		FROM BASE_MEMBER
+		WHERE ID=#{id}
+	</select>
+	<select id="findMany" resultType="com.nano.domain.base.Member"
+		parameterType="com.nano.domain.base.Member">
+		SELECT
+		<include refid="result"></include>
+		FROM BASE_MEMBER
+		WHERE 1=1
+		<if test="realName != null and realName != ''">
+			AND REAL_NAME=#{realName}
+		</if>
+		<if test="nick != null and nick != ''">
+			AND NICK=#{nick}
+		</if>
+		<if test="telephone != null and telephone != ''">
+			AND TELEPHONE=#{telephone}
+		</if>
+		<if test="mobile != null and mobile != ''">
+			AND MOBILE=#{mobile}
+		</if>
+		<if test="qq != null and qq != ''">
+			AND QQ=#{qq}
+		</if>
+		<if test="mail != null and mail != ''">
+			AND MAIL=#{mail}
+		</if>
+		<if test="msn != null and msn != ''">
+			AND MSN=#{msn}
+		</if>
+		<if test="account != null and account != ''">
+			AND ACCOUNT=#{account}
+		</if>
+	</select>
+	<insert id="saveOne" parameterType="com.nano.domain.base.Member">
+		INSERT INTO
+		BASE_MEMBER (
+		ID,REAL_NAME,NICK,TELEPHONE,MOBILE,QQ,MAIL,MSN,ACCOUNT,ADDRESS,OUTLAY,VANTAGES,CREATOR,MODIFIER,CREATED,MODIFIED,VERSION
+		) VALUES(
+		#{id},#{realName},#{nick},#{telephone},#{mobile},#{qq},#{mail},#{msn},#{account},#{address},#{outlay},#{vantages},#{creator},#{modifier},now(),#{modified},#{version}
+		)
+	</insert>
+	<insert id="saveMany" parameterType="map">
+		INSERT INTO BASE_MEMBER (
+		ID,REAL_NAME,NICK,TELEPHONE,MOBILE,QQ,MAIL,MSN,ACCOUNT,ADDRESS,OUTLAY,VANTAGES,CREATOR,MODIFIER,CREATED,MODIFIED,VERSION)
+		VALUES
+		<foreach collection="list" item="item" separator=",">
+			(
+			#{item.id},
+			#{item.realName},
+			#{item.nick},
+			#{item.telephone},
+			#{item.mobile},
+			#{item.qq},
+			#{item.mail},
+			#{item.msn},
+			#{item.account},
+			#{item.address},
+			#{item.outlay},
+			#{item.vantages},
+			#{item.creator},
+			#{item.modifier},
+			now(),
+			#{item.modified},
+			#{item.version}
+			)
+		</foreach>
+	</insert>
+	<update id="updateOne" parameterType="com.nano.domain.base.Member">
+		UPDATE BASE_MEMBER SET
+		REAL_NAME=#{realName},NICK=#{nick},TELEPHONE=#{telephone},MOBILE=#{mobile},QQ=#{qq},MAIL=#{mail},MSN=#{msn},ACCOUNT=#{account},ADDRESS=#{address},OUTLAY=#{outlay},VANTAGES=#{vantages},MODIFIED=now(),VERSION=VERSION + 1
+		WHERE ID=#{id} AND VERSION=#{version}
+	</update>
+	<delete id="deleteOne" parameterType="com.nano.domain.base.Member">
+		DELETE FROM BASE_MEMBER
+		WHERE ID = #{id} AND VERSION = #{version}
+	</delete>
+</mapper>

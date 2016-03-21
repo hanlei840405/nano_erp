@@ -1,0 +1,112 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nano.persistence.system.UserMapper">
+	<sql id="result">
+		ID,
+		CREATED,
+		MODIFIED,
+		VERSION,
+		CODE,
+		LOCKED,
+		NAME,
+		PASSWORD,
+		SALT,
+		CREATOR,
+		MODIFIER,
+		DEPARTMENT_ID AS departmentId
+	</sql>
+	<select id="findOne" resultType="com.nano.domain.system.User" parameterType="string">
+		SELECT <include refid="result"></include> FROM SYS_USER
+		WHERE ID=#{key} OR CODE=#{key}
+	</select>
+	<select id="findOneByCode" resultType="com.nano.domain.system.User" parameterType="string">
+		SELECT <include refid="result"></include> FROM SYS_USER
+		WHERE CODE=#{code}
+	</select>
+	<select id="findMany" resultType="com.nano.domain.system.User" parameterType="com.nano.domain.system.User">
+		SELECT <include refid="result"></include> FROM SYS_USER
+		WHERE 1=1
+		<if test="code != null and code != ''">
+			AND CODE LIKE CONCAT('%',#{code},'%')
+		</if>
+		<if test="name != null and name != ''">
+			AND NAME LIKE CONCAT('%',#{name},'%')
+		</if>
+		<if test="departmentId != null and departmentId != ''">
+			AND DEPARTMENT_ID=#{departmentId}
+		</if>
+	</select>
+	<select id="findManyByDepartment" resultType="com.nano.domain.system.User" parameterType="map">
+		SELECT <include refid="result"></include> FROM SYS_USER
+		WHERE DEPARTMENT_ID IN (
+		<foreach collection="departments" item="id" separator=",">
+			#{id}
+		</foreach>
+		)
+	</select>
+	<select id="findManyByGroup" resultType="com.nano.domain.system.User" parameterType="string">
+		SELECT 
+		T1.ID,
+		T1.CREATED,
+		T1.MODIFIED,
+		T1.VERSION,
+		T1.CODE,
+		T1.LOCKED,
+		T1.NAME,
+		T1.PASSWORD,
+		T1.SALT,
+		T1.CREATOR,
+		T1.MODIFIER,
+		T1.DEPARTMENT_ID AS departmentId
+		FROM SYS_USER T1 INNER JOIN SYS_USER_GROUP T2 ON T1.ID = T2.USER_ID 
+		WHERE T2.GROUP_ID = #{groupId}
+	</select>
+	<insert id="saveOne" parameterType="com.nano.domain.system.User">
+		INSERT INTO
+		SYS_USER (
+		ID,CODE,NAME,PASSWORD,SALT,DEPARTMENT_ID,LOCKED,CREATOR,MODIFIER,CREATED,MODIFIED,VERSION
+		) VALUES(
+		#{id},#{code},#{name},#{password},#{salt},#{departmentId},#{locked},#{creator},#{modifier},now(),#{modified},#{version}
+		)
+	</insert>
+	<insert id="saveMany" parameterType="map">
+		INSERT INTO SYS_USER (
+		ID,CODE,NAME,PASSWORD,SALT,DEPARTMENT_ID,LOCKED,CREATOR,MODIFIER,CREATED,MODIFIED,VERSION)
+		VALUES
+		<foreach collection="list" item="item" separator=",">
+			(
+			#{item.id},
+			#{item.code},
+			#{item.name},
+			#{item.password},
+			#{item.salt},
+			#{item.departmentId},
+			#{item.locked},
+			#{item.creator},
+			#{item.modifier},
+			now(),
+			#{item.modified},
+			#{item.version}
+			)
+		</foreach>
+	</insert>
+	<update id="updateOne" parameterType="com.nano.domain.system.User">
+		UPDATE SYS_USER SET CODE=#{code},NAME=#{name},DEPARTMENT_ID=#{departmentId},LOCKED=#{locked},MODIFIER=#{modifier},MODIFIED=now(),VERSION=VERSION + 1
+		WHERE ID=#{id} AND VERSION=#{version}
+	</update>
+	<update id="updateMany" parameterType="map">
+		<foreach collection="users" item="item" separator=";">
+		UPDATE SYS_USER SET CODE=#{item.code},NAME=#{item.name},DEPARTMENT_ID=#{item.departmentId},LOCKED=#{item.locked},MODIFIER=#{item.modifier},MODIFIED=now(),VERSION=VERSION + 1
+		WHERE ID=#{item.id} AND VERSION=#{item.version}
+		</foreach>
+	</update>
+	<delete id="deleteOne" parameterType="com.nano.domain.system.User">
+		DELETE FROM SYS_USER WHERE ID = #{id} AND VERSION=#{version}
+	</delete>
+	<delete id="deleteMany" parameterType="map">
+		DELETE FROM SYS_USER WHERE ID IN (
+		<foreach collection="list" item="id" separator=",">
+			#{id}
+		</foreach>
+		)
+	</delete>
+</mapper>

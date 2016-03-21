@@ -1,0 +1,57 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nano.persistence.base.NoteMapper">
+	<sql id="result">
+		ID,
+		CREATED,
+		MODIFIED,
+		VERSION,
+		CONTENT,
+		CREATOR,
+		MODIFIER
+	</sql>
+	<select id="findOne" resultType="com.nano.domain.base.Note"
+		parameterType="string">
+		SELECT
+		<include refid="result"></include>
+		FROM BASE_NOTE
+		WHERE ID=#{id}
+	</select>
+	<select id="findMany" resultType="com.nano.domain.base.Note">
+		SELECT
+		<include refid="result"></include>
+		FROM BASE_NOTE
+	</select>
+	<insert id="saveOne" parameterType="com.nano.domain.base.Note">
+		INSERT INTO
+		BASE_NOTE (
+		ID,CONTENT,CREATOR,MODIFIER,CREATED,MODIFIED,VERSION
+		) VALUES(
+		#{id},#{content},#{creator},#{modifier},now(),#{modified},#{version}
+		)
+	</insert>
+	<insert id="saveMany" parameterType="map">
+		INSERT INTO BASE_NOTE (
+		ID,CONTENT,CREATOR,MODIFIER,CREATED,MODIFIED,VERSION)
+		VALUES
+		<foreach collection="list" item="item" separator=",">
+			(
+			#{item.id},
+			#{item.content},
+			#{item.creator},
+			#{item.modifier},
+			now(),
+			#{item.modified},
+			#{item.version}
+			)
+		</foreach>
+	</insert>
+	<update id="updateOne" parameterType="com.nano.domain.base.Note">
+		UPDATE BASE_NOTE SET
+		CONTENT=#{content},MODIFIER=#{modifier},MODIFIED=now(),VERSION=VERSION + 1
+		WHERE ID=#{id} AND VERSION=#{version}
+	</update>
+	<delete id="deleteOne" parameterType="com.nano.domain.base.Note">
+		DELETE FROM BASE_NOTE
+		WHERE ID = #{id} AND VERSION = #{version}
+	</delete>
+</mapper>

@@ -1,0 +1,79 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nano.persistence.base.ShopMapper">
+	<sql id="result">
+		ID,
+		CREATED,
+		MODIFIED,
+		VERSION,
+		NAME,
+		CODE,
+		PLATFORM_ID AS platformId,
+		MEMO,
+		STATUS,
+		CREATOR,
+		MODIFIER
+	</sql>
+	<select id="findOne" resultType="com.nano.domain.base.Shop"
+		parameterType="string">
+		SELECT
+		<include refid="result"></include>
+		FROM BASE_SHOP
+		WHERE ID=#{id}
+	</select>
+	<select id="findMany" resultType="com.nano.domain.base.Shop"
+		parameterType="com.nano.domain.base.Shop">
+		SELECT
+		<include refid="result"></include>
+		FROM BASE_SHOP
+		WHERE 1=1
+		<if test="name != null and name != ''">
+			AND NAME=#{name}
+		</if>
+		<if test="code != null and code != ''">
+			AND CODE=#{code}
+		</if>
+		<if test="status != null and status != ''">
+			AND STATUS=#{status}
+		</if>
+		<if test="platformId != null and platformId != ''">
+			AND PLATFORM_ID=#{platformId}
+		</if>
+	</select>
+	<insert id="saveOne" parameterType="com.nano.domain.base.Shop">
+		INSERT INTO
+		BASE_SHOP (
+		ID,NAME,CODE,PLATFORM_ID,MEMO,STATUS,CREATOR,MODIFIER,CREATED,MODIFIED,VERSION
+		) VALUES(
+		#{id},#{name},#{code},#{platformId},#{memo},#{status},#{creator},#{modifier},now(),#{modified},#{version}
+		)
+	</insert>
+	<insert id="saveMany" parameterType="map">
+		INSERT INTO BASE_SHOP (
+		ID,NAME,CODE,PLATFORM_ID,MEMO,STATUS,CREATOR,MODIFIER,CREATED,MODIFIED,VERSION)
+		VALUES
+		<foreach collection="list" item="item" separator=",">
+			(
+			#{item.id},
+			#{item.name},
+			#{item.code},
+			#{item.platformId},
+			#{item.memo},
+			#{item.status},
+			#{item.creator},
+			#{item.modifier},
+			now(),
+			#{item.modified},
+			#{item.version}
+			)
+		</foreach>
+	</insert>
+	<update id="updateOne" parameterType="com.nano.domain.base.Shop">
+		UPDATE BASE_SHOP SET
+		NAME=#{name},CODE=#{code},PLATFORM_ID=#{platformId},MEMO=#{memo},STATUS=#{status},MODIFIED=now(),VERSION=VERSION + 1
+		WHERE ID=#{id} AND VERSION=#{version}
+	</update>
+	<delete id="deleteOne" parameterType="com.nano.domain.base.Shop">
+		DELETE FROM BASE_SHOP
+		WHERE ID = #{id} AND VERSION = #{version}
+	</delete>
+</mapper>

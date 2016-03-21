@@ -1,0 +1,106 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nano.persistence.system.GroupMapper">
+	<sql id="result">
+		ID,
+		CREATED,
+		MODIFIED,
+		VERSION,
+		CODE,
+		NAME,
+		CREATOR,
+		MODIFIER,
+		PARENT_ID AS parentId
+	</sql>
+	<select id="findOne" resultType="com.nano.domain.system.Group"
+		parameterType="string">
+		SELECT
+		<include refid="result"></include>
+		FROM SYS_GROUP
+		WHERE ID=#{id}
+	</select>
+	<select id="findRoots" resultType="com.nano.domain.system.Group">
+		SELECT
+		<include refid="result"></include>
+		FROM SYS_GROUP
+		WHERE PARENT_ID IS NULL
+	</select>
+	<select id="findMany" resultType="com.nano.domain.system.Group"
+		parameterType="com.nano.domain.system.Group">
+		SELECT
+		<include refid="result"></include>
+		FROM SYS_GROUP WHERE 1=1
+		<if test="code != null and code !=''">
+			AND CODE LIKE CONCAT('%',#{code},'%')
+		</if>
+		<if test="name != null and name !=''">
+			AND NAME = #{name}
+		</if>
+		<if test="parentId != null and parentId !=''">
+			AND PARENT_ID = #{parentId}
+		</if>
+	</select>
+	<select id="findManyByParent" resultType="com.nano.domain.system.Group"
+		parameterType="map">
+		SELECT
+		<include refid="result"></include>
+		FROM SYS_GROUP
+		WHERE PARENT_ID IN (
+		<foreach collection="parentIds" item="id" separator=",">
+			#{id}
+		</foreach>
+		)
+	</select>
+	<insert id="saveOne" parameterType="com.nano.domain.system.Group">
+		INSERT INTO
+		SYS_GROUP (
+		ID,CODE,NAME,PARENT_ID,CREATOR,MODIFIER,CREATED,MODIFIED,VERSION
+		)
+		VALUES(
+		#{id},#{code},#{name},#{parentId},#{creator},#{modifier},now(),#{modified},#{version}
+		)
+	</insert>
+	<insert id="saveMany" parameterType="map">
+		INSERT INTO SYS_GROUP (
+		ID,CODE,NAME,PARENT_ID,CREATOR,MODIFIER,CREATED,MODIFIED,VERSION)
+		VALUES
+		<foreach collection="list" item="item" separator=",">
+			(
+			#{item.id},
+			#{item.code},
+			#{item.name},
+			#{item.parentId},
+			#{item.creator},
+			#{item.modifier},
+			now(),
+			#{item.modified},
+			#{item.version}
+			)
+		</foreach>
+	</insert>
+	<update id="updateOne" parameterType="com.nano.domain.system.Group">
+		UPDATE SYS_GROUP SET
+		CODE=#{code},NAME=#{name},PARENT_ID=#{parentId},MODIFIER=#{modifier},MODIFIED=now(),VERSION=VERSION
+		+ 1
+		WHERE ID=#{id} AND VERSION=#{version}
+	</update>
+	<update id="updateMany" parameterType="map">
+		<foreach collection="functions" item="item" separator=";">
+			UPDATE
+			SYS_GROUP SET
+			CODE=#{item.code},NAME=#{item.name},PARENT_ID=#{item.parentId},MODIFIER=#{item.modifier},MODIFIED=now(),VERSION=VERSION
+			+ 1
+			WHERE ID=#{item.id} AND VERSION=#{item.version}
+		</foreach>
+	</update>
+	<delete id="deleteOne" parameterType="com.nano.domain.system.Group">
+		DELETE FROM SYS_GROUP WHERE
+		ID = #{id} AND VERSION = #{version}
+	</delete>
+	<delete id="deleteMany" parameterType="map">
+		DELETE FROM SYS_GROUP WHERE ID IN (
+		<foreach collection="list" item="id" separator=",">
+			#{id}
+		</foreach>
+		)
+	</delete>
+</mapper>

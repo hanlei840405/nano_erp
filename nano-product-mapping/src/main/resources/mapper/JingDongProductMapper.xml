@@ -1,0 +1,121 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nano.persistence.productmapping.JingDongProductMapper">
+	<sql id="result">
+		ID,
+		CREATED,
+		MODIFIED,
+		VERSION,
+		PRODUCT_ID AS productId,
+		PLATFORM_PRODUCT_ID AS platformProductId,
+		NUM,
+		LIST_TIME AS listTime,
+		DE_LIST_TIME AS deListTime,
+		TITLE,
+		PRODUCT_PRICE as productPrice,
+		APPROVE_STATUS AS approveStatus,
+		SHOP_ID AS shopId,
+		PRODUCT_OUTER_ID AS productOuterId,
+		BARCODE,
+		SKU_OUTER_ID AS skuOuterId,
+		PLATFORM_SKU_ID AS platformSkuId,
+		PROPERTIES,
+		QUANTITY,
+		SKU_PRICE AS skuPrice,
+		SKU_ID AS skuId,
+		CREATOR,
+		MODIFIER
+	</sql>
+	<select id="findOne" resultType="com.nano.domain.productmapping.JingDongProduct"
+		parameterType="string">
+		SELECT
+		<include refid="result"></include>
+		FROM PRODUCT_MAPPING_JINGDONG_PRODUCT
+		WHERE ID=#{id}
+	</select>
+	<select id="findMany" resultType="com.nano.domain.productmapping.JingDongProduct"
+		parameterType="com.nano.domain.productmapping.JingDongProduct">
+		SELECT
+		<include refid="result"></include>
+		FROM PRODUCT_MAPPING_JINGDONG_PRODUCT
+		WHERE 1=1
+		<if test="productOuterId != null and productOuterId != ''">
+			AND PRODUCT_OUTER_ID = #{productOuterId}
+		</if>
+		<if test="shopId != null and shopId != ''">
+			AND SHOP_ID = #{shopId}
+		</if>
+		<if test="platformProductId != null and platformProductId != ''">
+			AND PLATFORM_PRODUCT_ID = #{platformProductId}
+		</if>
+		<if test="barcode != null and barcode != ''">
+			AND BARCODE = #{barcode}
+		</if>
+	</select>
+	<insert id="saveOne" parameterType="com.nano.domain.productmapping.JingDongProduct">
+		INSERT INTO
+		PRODUCT_MAPPING_JINGDONG_PRODUCT (
+		ID,
+		CREATED,
+		MODIFIED,
+		VERSION,
+		PRODUCT_ID,
+		PLATFORM_PRODUCT_ID,
+		NUM,
+		LIST_TIME,
+		DE_LIST_TIME,
+		TITLE,
+		PRODUCT_PRICE,
+		APPROVE_STATUS,
+		SHOP_ID,
+		PRODUCT_OUTER_ID,
+		BARCODE,
+		SKU_OUTER_ID,
+		PLATFORM_SKU_ID,
+		PROPERTIES,
+		QUANTITY,
+		SKU_PRICE,
+		SKU_ID,
+		CREATOR,
+		MODIFIER
+		) VALUES(
+		#{id},
+		now(),
+		#{modified},
+		#{version},
+		#{productId},
+		#{platformProductId},
+		#{num},
+		#{listTime},
+		#{deListTime},
+		#{title},
+		#{productPrice},
+		#{approveStatus},
+		#{shopId},
+		#{productOuterId},
+		#{barcode},
+		#{skuOuterId},
+		#{platformSkuId},
+		#{properties},
+		#{quantity},
+		#{skuPrice},
+		#{skuId},
+		#{creator},
+		#{modifier}
+		)
+	</insert>
+	<update id="updateOne" parameterType="com.nano.domain.productmapping.JingDongProduct">
+		UPDATE
+		PRODUCT_MAPPING_JINGDONG_PRODUCT SET
+		PRODUCT_ID=#{productId},PLATFORM_PRODUCT_ID=#{platformProductId},NUM=#{num},LIST_TIME=#{listTime},DE_LIST_TIME=#{deListTime},
+		TITLE=#{title},PRODUCT_PRICE=#{productPrice},APPROVE_STATUS=#{approveStatus},SHOP_ID=#{shopId},PRODUCT_OUTER_ID=#{productOuterId},
+		BARCODE=#{barcode},SKU_OUTER_ID=#{skuOuterId},PLATFORM_SKU_ID=#{platformSkuId},PROPERTIES=#{properties},QUANTITY=#{quantity},SKU_PRICE=#{skuPrice},SKU_ID=#{skuId},MODIFIER=#{modifier},MODIFIED=now(),VERSION=VERSION
+		+ 1
+		WHERE ID=#{id} AND VERSION=#{version}
+	</update>
+	<delete id="deleteOne" parameterType="com.nano.domain.productmapping.JingDongProduct">
+		DELETE FROM
+		PRODUCT_MAPPING_JINGDONG_PRODUCT
+		WHERE ID = #{id} AND VERSION =
+		#{version}
+	</delete>
+</mapper>

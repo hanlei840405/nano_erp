@@ -1,0 +1,33 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nano.persistence.system.FunctionPrivilegeMapper">
+	<select id="findMany" resultType="map" parameterType="map">
+		SELECT * FROM SYS_FUNCTION_PRIVILEGE
+		WHERE 1=1
+		<if test="functionId != null and functionId != ''">
+			AND FUNCTION_ID = #{functionId}
+		</if>
+		<if test="privilegeId != null and privilegeId != ''">
+			AND PRIVILEGE_ID = #{privilegeId}
+		</if>
+	</select>
+	<insert id="saveMany" parameterType="map">
+		INSERT INTO SYS_FUNCTION_PRIVILEGE (
+		FUNCTION_ID,PRIVILEGE_ID) 
+		VALUES
+		<foreach collection="list" item="item" separator=",">
+			(
+			#{item.functionId},
+			#{item.privilegeId}
+			)
+		</foreach>
+	</insert>
+	<delete id="deleteMany" parameterType="map">
+		DELETE FROM SYS_FUNCTION_PRIVILEGE WHERE 1=1
+		<if test="functionId != null and functionId != ''">
+			AND FUNCTION_ID = #{functionId}
+		</if>
+		<if test="privilegeId != null and privilegeId != ''">
+			AND PRIVILEGE_ID = #{privilegeId}
+		</if>
+	</delete>
+</mapper>

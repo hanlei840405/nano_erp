@@ -1,0 +1,115 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nano.persistence.system.RoleMapper">
+	<sql id="result">
+		ID,
+		CREATED,
+		MODIFIED,
+		VERSION,
+		CODE,
+		NAME,
+		CREATOR,
+		MODIFIER
+	</sql>
+	<select id="findOne" resultType="com.nano.domain.system.Role"
+		parameterType="string">
+		SELECT
+		<include refid="result"></include>
+		FROM SYS_ROLE
+		WHERE ID=#{id}
+	</select>
+	<select id="findMany" resultType="com.nano.domain.system.Role"
+		parameterType="com.nano.domain.system.Role">
+		SELECT
+		<include refid="result"></include>
+		FROM SYS_ROLE WHERE 1=1
+		<if test="code != null and code !=''">
+			AND CODE LIKE CONCAT('%',#{code},'%')
+		</if>
+		<if test="name != null and name !=''">
+			AND NAME = #{name}
+		</if>
+	</select>
+	<select id="findManyByUser" resultType="com.nano.domain.system.Role"
+		parameterType="string">
+		SELECT
+		T1.ID,
+		T1.CREATED,
+		T1.MODIFIED,
+		T1.VERSION,
+		T1.CODE,
+		T1.NAME,
+		T1.CREATOR,
+		T1.MODIFIER
+		FROM SYS_ROLE T1 INNER JOIN
+		SYS_USER_ROLE T2 ON T1.ID =
+		T2.ROLE_ID
+		WHERE T2.USER_ID=#{userId}
+	</select>
+	<select id="findManyByGroup" resultType="com.nano.domain.system.Role"
+		parameterType="string">
+		SELECT
+		T1.ID,
+		T1.CREATED,
+		T1.MODIFIED,
+		T1.VERSION,
+		T1.CODE,
+		T1.NAME,
+		T1.CREATOR,
+		T1.MODIFIER
+		FROM SYS_ROLE T1 INNER JOIN
+		SYS_ROLE_GROUP T2 ON T1.ID = T2.ROLE_ID
+		WHERE
+		T2.GROUP_ID=#{groupId}
+	</select>
+	<insert id="saveOne" parameterType="com.nano.domain.system.Role">
+		INSERT INTO
+		SYS_ROLE (
+		ID,CODE,NAME,CREATOR,MODIFIER,CREATED,MODIFIED,VERSION
+		) VALUES(
+		#{id},#{code},#{name},#{creator},#{modifier},now(),#{modified},#{version}
+		)
+	</insert>
+	<insert id="saveMany" parameterType="map">
+		INSERT INTO SYS_ROLE (
+		ID,CODE,NAME,CREATOR,MODIFIER,CREATED,MODIFIED,VERSION)
+		VALUES
+		<foreach collection="list" item="item" separator=",">
+			(
+			#{item.id},
+			#{item.code},
+			#{item.name},
+			#{item.creator},
+			#{item.modifier},
+			now(),
+			#{item.modified},
+			#{item.version}
+			)
+		</foreach>
+	</insert>
+	<update id="updateOne" parameterType="com.nano.domain.system.Role">
+		UPDATE SYS_ROLE SET
+		CODE=#{code},NAME=#{name},MODIFIER=#{modifier},MODIFIED=now(),VERSION=VERSION
+		+ 1
+		WHERE ID=#{id} AND VERSION=#{version}
+	</update>
+	<update id="updateMany" parameterType="map">
+		<foreach collection="functions" item="item" separator=";">
+			UPDATE
+			SYS_ROLE SET
+			CODE=#{item.code},NAME=#{item.name},MODIFIER=#{item.modifier},MODIFIED=now(),VERSION=VERSION
+			+ 1
+			WHERE ID=#{item.id} AND VERSION=#{item.version}
+		</foreach>
+	</update>
+	<delete id="deleteOne" parameterType="com.nano.domain.system.Role">
+		DELETE FROM SYS_ROLE WHERE
+		ID = #{id} AND VERSION=#{version}
+	</delete>
+	<delete id="deleteMany" parameterType="list">
+		DELETE FROM SYS_ROLE WHERE ID IN (
+		<foreach collection="list" item="id" separator=",">
+			#{id}
+		</foreach>
+		)
+	</delete>
+</mapper>

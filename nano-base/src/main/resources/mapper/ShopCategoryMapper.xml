@@ -1,0 +1,49 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nano.persistence.base.ShopCategoryMapper">
+	<sql id="result">
+		SHOP_ID AS shopId,
+		CATEGORY_ID AS categoryId
+	</sql>
+	<select id="findMany" resultType="com.nano.domain.base.ShopCategory"
+		parameterType="com.nano.domain.base.ShopCategory">
+		SELECT
+		<include refid="result"></include>
+		FROM BASE_SHOP_CATEGORY
+		WHERE 1=1
+		<if test="shopId != null and shopId != ''">
+			AND SHOP_ID=#{shopId}
+		</if>
+		<if test="categoryId != null and categoryId != ''">
+			AND CATEGORY_ID=#{categoryId}
+		</if>
+	</select>
+	<insert id="saveOne" parameterType="com.nano.domain.base.ShopCategory">
+		INSERT INTO
+		BASE_SHOP_CATEGORY (
+		SHOP_ID,CATEGORY_ID
+		) VALUES(
+		#{shopId},#{categoryId}
+		)
+	</insert>
+	<insert id="saveMany" parameterType="map">
+		INSERT INTO BASE_SHOP_CATEGORY (
+		SHOP_ID,CATEGORY_ID)
+		VALUES
+		<foreach collection="list" item="item" separator=",">
+			(
+			#{item.shopId},
+			#{item.categoryId}
+			)
+		</foreach>
+	</insert>
+	<delete id="delete" parameterType="com.nano.domain.base.ShopCategory">
+		DELETE FROM BASE_SHOP_CATEGORY
+		WHERE 1=1
+		<if test="shopId != null and shopId != ''">
+			AND SHOP_ID=#{shopId}
+		</if>
+		<if test="categoryId != null and categoryId != ''">
+			AND CATEGORY_ID=#{categoryId}
+		</if>
+	</delete>
+</mapper>

@@ -1,0 +1,52 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nano.persistence.base.DictionaryMapper">
+	<sql id="result">
+		ID,
+		CREATED,
+		MODIFIED,
+		NAME,
+		CODE,
+		CREATOR,
+		MODIFIER
+	</sql>
+	<select id="findOne" resultType="com.nano.domain.base.Dictionary"
+		parameterType="string">
+		SELECT
+		<include refid="result"></include>
+		FROM BASE_DICTIONARY
+		WHERE ID=#{key} OR CODE=#{key}
+	</select>
+	<select id="findMany" resultType="com.nano.domain.base.Dictionary">
+		SELECT
+		<include refid="result"></include>
+		FROM BASE_DICTIONARY
+	</select>
+	<insert id="saveOne" parameterType="com.nano.domain.base.Dictionary">
+		INSERT INTO
+		BASE_DICTIONARY (
+		ID,NAME,CODE,CREATOR,MODIFIER,CREATED,MODIFIED
+		) VALUES(
+		#{id},#{name},#{code},#{creator},#{modifier},now(),#{modified}
+		)
+	</insert>
+	<insert id="saveMany" parameterType="map">
+		INSERT INTO BASE_DICTIONARY (
+		ID,NAME,CODE,CREATOR,MODIFIER,CREATED,MODIFIED)
+		VALUES
+		<foreach collection="list" item="item" separator=",">
+			(
+			#{item.id},
+			#{item.name},
+			#{item.code},
+			#{item.creator},
+			#{item.modifier},
+			now(),
+			#{item.modified}
+			)
+		</foreach>
+	</insert>
+	<delete id="deleteOne" parameterType="com.nano.domain.base.Dictionary">
+		DELETE FROM BASE_DICTIONARY
+		WHERE ID = #{id}
+	</delete>
+</mapper>
